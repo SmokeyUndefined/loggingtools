@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WHOIS Logger</title>
+    <script>
+        window.onload = function() {
+            sendWhois();
+        };
+
+        function sendWhois() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://ipinfo.io/json", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    var whoisInfo = "IP Address: " + data.ip + "\nHostname: " + data.hostname + "\nCity: " + data.city + "\nRegion: " + data.region + "\nCountry: " + data.country + "\nOrganization: " + data.org;
+
+                    // Get the webhook URL from user input
+                    var webhookUrl = prompt("Please enter your webhook URL:");
+
+                    if (webhookUrl) {
+                        var payload = {
+                            content: whoisInfo
+                        };
+
+                        var request = new XMLHttpRequest();
+                        request.open("POST", webhookUrl, true);
+                        request.setRequestHeader('Content-Type', 'application/json');
+                        request.send(JSON.stringify(payload));
+                    } else {
+                        alert("No webhook URL provided. WHOIS information not sent.");
+                    }
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</head>
+<body>
+    <h1>WHOIS Logger</h1>
+    <p>This tool generates WHOIS logging URLs and sends the WHOIS information to the connected webhook that the person put.</p>
+</body>
+</html>
